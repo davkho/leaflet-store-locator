@@ -1,2 +1,2 @@
 # leaflet-store-locator
-a store locator based on mapbox example but implemented via leaflet
+A store locator based on the classic [mapbox's example](https://www.mapbox.com/guides/building-a-store-locator/),  but implemented only via leaflet.js
