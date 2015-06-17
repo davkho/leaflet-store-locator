@@ -2,12 +2,7 @@
 <html>
 <head>
   <meta charset=utf-8 />
-  <title>Store Locator | Mapbox</title>
-  <!-- <link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,700' rel='stylesheet'> -->
-  <!-- <script src='https://api.tiles.mapbox.com/mapbox.js/v2.0.1/mapbox.js'></script> -->
-  <!-- <link href='https://api.tiles.mapbox.com/mapbox.js/v2.0.1/mapbox.css' rel='stylesheet' /> -->
-  <!-- <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.3/leaflet.css" />
-  <script src="http://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.3/leaflet.js"></script> -->
+  <title>Store Locator</title>  
   <link rel="stylesheet" href="leaflet.css" />
   <script src="leaflet.js"></script>
   <script src="Leaflet.MakiMarkers.js"></script>
@@ -155,20 +150,20 @@
   //       
   //       
   
-/*==========  preparo elementi pagina  ==========*/
+  /*==========  preparo elementi pagina  ==========*/
 
   var listings = document.getElementById('listings');
   function setActive(el) {
     var siblings = listings.getElementsByTagName('div');
     for (var i = 0; i < siblings.length; i++) {
       siblings[i].className = siblings[i].className
-        .replace(/active/, '').replace(/\s\s*$/, '');
+      .replace(/active/, '').replace(/\s\s*$/, '');
     }
 
     el.className += ' active';
   }
 
-/*==========  preparo mappa  ==========*/
+  /*==========  preparo mappa  ==========*/
 
 
   var layer = L.tileLayer('http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', {
@@ -182,7 +177,7 @@
   });
 
 
-/*==========  carico dati and GO!!!  ==========*/
+  /*==========  carico dati and GO!!!  ==========*/
 
 
   // carico geojson su geojson layer
@@ -200,88 +195,89 @@
   var blueIcon = L.MakiMarkers.icon({icon: "fast-food", color: "#2D3CCC", size: "m"});
   console.log(feature);
 
-
-    // // Shorten locale.feature.properties to just `prop` so we're not
-    //   // writing this long form over and over again.
-    //   var prop = feature.properties;
-    //   console.log(prop);
-
-    //   // Each marker on the map.
-    //   var popup = '<h3>Sweetgreen</h3><div>' + prop.address;
-
-    //   var listing = listings.appendChild(document.createElement('div'));
-    //       listing.className = 'item';
-
-    //   var link = listing.appendChild(document.createElement('a'));
-    //       link.href = '#';
-    //       link.className = 'title';
-
-    //   link.innerHTML = prop.address;
-    //   if (prop.crossStreet) {
-    //     link.innerHTML += '<br /><small class="quiet">' + prop.crossStreet + '</small>';
-    //     popup += '<br /><small class="quiet">' + prop.crossStreet + '</small>';
-    //   }
-
-    //   var details = listing.appendChild(document.createElement('div'));
-    //   details.innerHTML = prop.city;
-    //   if (prop.phone) {
-    //     details.innerHTML += ' &middot; ' + prop.phoneFormatted;
-    //   }
-
-    //   link.onclick = function() {
-    //     setActive(listing);
-
-    //     // When a menu item is clicked, animate the map to center
-    //     // its associated locale and open its popup.
-    //     map.setView(feature.getLatLng(), 16);
-    //     feature.openPopup();
-    //     return false;
-    //   };
-
-    //   // Marker interaction
-    //   feature.on('click', function(e) {
-    //       // 1. center the map on the selected marker.
-    //       map.panTo(feature.getLatLng());
-
-    //       // 2. Set active the markers associated listing.
-    //       setActive(listing);
-    //   });
-
-    //   popup += '</div>';
-    //   feature.bindPopup(popup);
-    // // });
-
-
-
   /* filtro features */
   if (feature.properties.state == 'PA')
     return L.marker(latlng, {icon: blueIcon});
   else
     return L.marker(latlng, {icon: purpleIcon});
-  }
+}
 }).addTo(map);
 
+var cc;
+  locations.eachLayer(function  (e) {
 
+cc= e;
+    // Shorten locale.feature.properties to just `prop` so we're not
+      // writing this long form over and over again.
+      var prop = e.feature.properties;
+      // console.log(prop);
+
+      // Each marker on the map.
+      var popup = '<h3>Sweetgreen</h3><div>' + prop.address;
+
+      var listing = listings.appendChild(document.createElement('div'));
+          listing.className = 'item';
+
+      var link = listing.appendChild(document.createElement('a'));
+          link.href = '#';
+          link.className = 'title';
+
+      link.innerHTML = prop.address;
+      if (prop.crossStreet) {
+        link.innerHTML += '<br /><small class="quiet">' + prop.crossStreet + '</small>';
+        popup += '<br /><small class="quiet">' + prop.crossStreet + '</small>';
+      }
+
+      var details = listing.appendChild(document.createElement('div'));
+      details.innerHTML = prop.city;
+      if (prop.phone) {
+        details.innerHTML += ' &middot; ' + prop.phoneFormatted;
+      }
+
+      link.onclick = function() {
+        setActive(listing);
+
+        // When a menu item is clicked, animate the map to center
+        // its associated locale and open its popup.
+        map.setView(e.getLatLng(), 16);
+        e.openPopup();
+        return false;
+      };
+
+      // // Marker interaction
+      e.on('click', function(a) {
+          // 1. center the map on the selected marker.
+          map.panTo([a.latlng.lat,a.latlng.lng]);
+          map.panTo(e.getLatLng());
+          // 2. Set active the markers associated listing.
+          setActive(listing);
+      });
+
+      popup += '</div>';
+      e.bindPopup(popup);
+    
+
+  });
 
   map.fitBounds(locations.getBounds());
   map.addLayer(layer);
 
-  var listings = document.getElementById('listings');
+  // var listings = document.getElementById('listings');
   // var locations = L.mapbox.featureLayer().addTo(map);
   // var locations = L.featureGroup().addTo(map);
 
 
   // locations.loadURL('sweetgreen.geojson');
 
-  function setActive(el) {
-    var siblings = listings.getElementsByTagName('div');
-    for (var i = 0; i < siblings.length; i++) {
-      siblings[i].className = siblings[i].className
-      .replace(/active/, '').replace(/\s\s*$/, '');
-    }
+  // function setActive(el) {
+  //   var siblings = listings.getElementsByTagName('div');
+  //   for (var i = 0; i < siblings.length; i++) {
+  //     siblings[i].className = siblings[i].className
+  //     .replace(/active/, '').replace(/\s\s*$/, '');
+  //   }
 
-    el.className += ' active';
-  }
+  //   el.className += ' active';
+  // }
   
 
 
