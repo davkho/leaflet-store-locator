@@ -112,3 +112,13 @@ locations.eachLayer(function  (e) {
   map.addLayer(layer);
 
  
+
+ /* filtri */ 
+
+L.geoJson(someFeatures, {
+    filter: function(feature, layer) {
+        return feature.properties.show_on_map;
+    }
+}).addTo(map);
+
+
