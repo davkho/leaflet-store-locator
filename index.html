@@ -8,14 +8,32 @@
   
 </head>
 <body>
-  <div class='sidebar'>
-    <div class='heading'>
-      <h1>Our locations</h1>
-    </div>
-    <div id='listings' class='listings'></div>
+  <div class="container">
+
+    <div class="filter-container">
+    <ul>
+      <li>Filter stores</li>
+      <li>Country</li>
+      <li>Zip</li>  
+      <li>State/Province</li>
+      <li>Reseller type</li>
+      <li>Reset</li>
+    </ul>
   </div>
-  <div id='map' class='map'> </div>
-  
+
+  <div class="map-container">
+
+    <div class='sidebar'>
+      <div class='heading'>
+        <h1>Our locations</h1>
+      </div>
+      <div id='listings' class='listings'></div>
+    </div>
+    
+    <div id='map' class='map'> </div>
+  </div>  
+  </div>
+
   <script src="leaflet.js"></script>
   <script src="Leaflet.MakiMarkers.js"></script>
   <script src="sweetgreen.geojson"></script>
