@@ -40,10 +40,12 @@
   var blueIcon = L.MakiMarkers.icon({icon: "fast-food", color: "#2D3CCC", size: "m"});
   console.log(feature);
 
-  // filtro features 
-  if (feature.properties.state == 'PA')
-    return L.marker(latlng, {icon: blueIcon});
-  else
+  // tentativo di filtro features 
+  // non mi serve più perchè ne implemento uno serio a seconda dei bottoni scelti dall'utente
+  // if (feature.properties.state == 'PA')
+  //   return L.marker(latlng, {icon: blueIcon});
+  // else
+  //   return L.marker(latlng, {icon: purpleIcon});
     return L.marker(latlng, {icon: purpleIcon});
 }
 }).addTo(map);
@@ -114,6 +116,8 @@ locations.eachLayer(function  (e) {
  
 
  /* filtri */ 
+
+ console.log(document.getElementsByClassName('.filter-country'));
 
 L.geoJson(someFeatures, {
     filter: function(feature, layer) {
