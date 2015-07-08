@@ -38,7 +38,7 @@
   // utilizzo il plugin maki-icons per leaflet
   var purpleIcon = L.MakiMarkers.icon({icon: "rocket", color: "#b0b", size: "m"});
   var blueIcon = L.MakiMarkers.icon({icon: "fast-food", color: "#2D3CCC", size: "m"});
-  console.log(feature);
+  // console.log(feature);
 
   // tentativo di filtro features 
   // non mi serve più perchè ne implemento uno serio a seconda dei bottoni scelti dall'utente
@@ -114,15 +114,23 @@ locations.eachLayer(function  (e) {
   map.addLayer(layer);
 
  
+/* create menu */
+// $('#primary_nav_wrap').append(ul_menu);
+
+
 
  /* filtri */ 
 
- console.log(document.getElementsByClassName('.filter-country'));
+//  console.log(document.getElementsByClassName('.filter-country'));
 
-L.geoJson(someFeatures, {
-    filter: function(feature, layer) {
-        return feature.properties.show_on_map;
-    }
-}).addTo(map);
+// L.geoJson(someFeatures, {
+//     filter: function(feature, layer) {
+//         return feature.properties.show_on_map;
+//     }
+// }).addTo(map);
+
+
+// data filter tipo 
+// data filet value
 
 
