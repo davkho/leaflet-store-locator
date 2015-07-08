@@ -1,4 +1,4 @@
-
+var unique_resellers;
 
 /*==========  preparo elementi pagina  ==========*/
 
@@ -36,7 +36,15 @@ function setActive(el) {
       resseller_type: {
         propertyName: "resseller_type",
         arrayName: resseller_type,
-        propertyClass: '.filter-resseller'
+        propertyClass: '.filter-resseller',
+        resseller_typologies : {
+          "Head Quarter":"#d7191c", 
+          "Distributor": "#99cc99", 
+          "Retail":"#fdae61",
+          "Factory Outlet":"#ffffbf",
+          "Factory Store":"#abd9e9",
+          "E-commerce  and Store":"#2c7bb6"
+        }
       },
       state_province: {
         propertyName: "state_province",
@@ -62,7 +70,8 @@ function setActive(el) {
     // and appends to the DOM a list with ul li of same names
     function listElementConstructor(propertyClass,arrayName, propertyName){     
       var unique = arrayName.filter(onlyUnique);
-      console.log(unique);
+      // save the unique resellers array so I can use it to color the markers later on
+      if (propertyName == 'resseller_type') {unique_resellers = unique;}
       for (var i=0; i<unique.length; i++){
         var appender = propertyClass.toString()+' ul';
       // strano modo di passargli il valore..usa un oggetto con la proprietà html del nodo
@@ -123,7 +132,7 @@ function setActive(el) {
       //   return L.marker(latlng, {icon: purpleIcon});
       return L.marker(latlng, {icon: purpleIcon});
     }
-    }).addTo(map);
+  }).addTo(map);
   }
 
   wholeMarkersLayer();
@@ -194,6 +203,15 @@ map.addLayer(layer);
 
 //  console.log(document.getElementsByClassName('.filter-country'));
 
+// create marker colours obj
+var coloursObj = unique_resellers.reduce(function(o, v, i) {
+  o[i] = v;  
+  console.log(o);
+  console.log(i);
+  console.log(v);
+  return o;
+}, {});
+
 $('.filter-master ul li').click(function(event) {
 
   map.removeLayer(locations);
@@ -201,26 +219,33 @@ $('.filter-master ul li').click(function(event) {
   filterPressed = event.target.dataset.filter;
   var prop = event.target.dataset.value;
 
+
   locations = L.geoJson(locations.toGeoJSON(), {
     pointToLayer: function(feature, latlng) {
-      var blueIcon = L.MakiMarkers.icon({icon: "fast-food", color: "#2D3CCC", size: "m"});
-      return L.marker(latlng, {icon: blueIcon});
+
+      if (filterPressed=='resseller_type'){
+        console.log(feature);
+        console.log(feature.properties.resseller_type + ' '+ propertiesObj.resseller_type.resseller_typologies[feature.properties.resseller_type] );
+        var markerColor = propertiesObj.resseller_type.resseller_typologies[feature.properties.resseller_type]
+        console.log(markerColor);
+        var markerIcon = L.MakiMarkers.icon({icon: "circle", color: markerColor, size: "m"});
+      }else{
+        var markerIcon = L.MakiMarkers.icon({icon: "fast-food", color: "#2D3CCC", size: "m"});
+      }      
+      return L.marker(latlng, {icon: markerIcon});
     },
     filter: function(feature) {
       return feature.properties[filterPressed] == prop;
     }
   });
 
-   map.addLayer(locations);
+  map.addLayer(locations);
 
 });
 
 $('.filter-reset').click(function () {
-  map.removeLayer(locations);
-  console.log('poroc');
-  // console.log($(event.target.parentElement).hasClass('filter-reset'));
-  // if ($(event.target.parentElement).hasClass('filter-reset')){
-    wholeMarkersLayer();
+  map.removeLayer(locations);    
+  wholeMarkersLayer();
   
 })
 
