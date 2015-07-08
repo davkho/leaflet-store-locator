@@ -216,3 +216,8 @@ a:hover { color:#101010; }
 {
   display:block
 }
+
+/*Menu*/
+.filter-reset{
+  background-color: rgb(234, 144, 144);
+}

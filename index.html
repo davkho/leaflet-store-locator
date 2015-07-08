@@ -11,66 +11,33 @@
   <div class="container">
 
     <!-- Menu -->
-    <!-- nav id='primary_nav_wrap' class="filter-container">
+    <nav id='primary_nav_wrap' class="filter-container">
       <ul>
         <li class="filter current-menu-item" data-filter=".filter-stores"><a href="#">Filter the stores: </a></li>
-        <li class="filter" data-filter=".filter-stores"><a href="#">Geographic filter</a>
+        <li class="filter filter-geo" ><a href="#">Geographic filter</a>
           <ul>
-            <li class="filter" data-filter=".filter-country"><a href="#">Country</a>
+            <li class="filter filter-master filter-country" data-filter="country"><a href="#">Country</a>
               <ul>
-                <li class="filter"><a href="">Italy</a></li>
-                <li class="filter"><a href="">USA</a></li>
               </ul>
-            </li>
-            <li class="filter" data-filter=".filter-zip"><a href="#">Zip</a></li>  
-            <li class="filter" data-filter=".filter-state"><a href="#">State/Province</a>
+            </li>  
+            <li class="filter filter-master filter-zip" data-filter="zip"><a href="#">Zip</a>
               <ul>
-                <li class="filter"><a href="">Italyaaaa</a></li>
-                <li class="filter"><a href="">USAaaa</a></li>
+              </ul>
+            </li>  
+            <li class="filter filter-master filter-state" data-filter="state"><a href="#">State/Province</a>
+              <ul>
               </ul>
             </li>
           </ul>
-        </li>
-        <li class="filter" data-filter=".filter-reseller"><a href="#">Reseller type</a>
-          <ul>
-            <li  class="filter " data-filter=".filter-reseller-hq"><a href="#">Head Quarter</a></li>
-            <li  class="filter " data-filter=".filter-reseller-dist"><a href="#">Distributor</a></li>
-            <li  class="filter " data-filter=".filter-reseller-ret"><a href="#">Retail</a></li>
-            <li  class="filter " data-filter=".filter-reseller-fo"><a href="#">Factory Outlet</a></li>
-            <li  class="filter " data-filter=".filter-reseller-fs"><a href="#">Factory Store</a></li>
-            <li  class="filter " data-filter=".filter-reseller-eco"><a href="#">E-commerce only</a></li>
-            <li  class="filter " data-filter=".filter-reseller-ecs"><a href="#">E-commerce and Store</a></li>
+        </li>  
+        <li class="filter filter-master filter-resseller" data-filter="reseller"><a href="#">Reseller type</a>
+          <ul>       
           </ul>
         </li>
-        <li class="filter" data-filter=".filter-reset"><a href="#">Reset</a></li>
+        <li class="filter filter-master filter-reset" data-filter="reset"><a href="#">Reset Filters</a>
       </ul>
-    </nav> -->
-<nav id='primary_nav_wrap' class="filter-container">
-    <ul>
-      <li class="filter current-menu-item" data-filter=".filter-stores"><a href="#">Filter the stores: </a></li>
-      <li class="filter filter-geo" ><a href="#">Geographic filter</a>
-        <ul>
-          <li class="filter filter-country" data-filter="country"><a href="#">Country</a>
-          <ul>
-          </ul>
-          </li>  
-          <li class="filter filter-zip" data-filter="zip"><a href="#">Zip</a>
-          <ul>
-          </ul>
-          </li>  
-          <li class="filter filter-state" data-filter="state"><a href="#">State/Province</a>
-          <ul>
-          </ul>
-          </li>
-        </ul>
-      </li>  
-      <li class="filter filter-resseller" data-filter="reseller"><a href="#">Reseller type</a>
-        <ul>       
-        </ul>
-      </li>
-    </ul>
 
-  </div>
+    </div>
 
     <!-- Map -->
     <div class="map-container">
@@ -94,78 +61,6 @@
   <!-- actual data -->
   <script src="axo_reseller.json"></script>
   <script src="my-script.js"></script>
-  <script>
-  
-// array vuoti da riempire con tutti i valori di ogni propprieta
-    var country = [], zip=[], state_province=[], resseller_type = [] ;
-    // funzione che mi riempie l'array con la proppietà richiesta attraversando il geojson
-    function fillArray(property, arrayToFill){      
-      for (var i=0; i<geojsonFeature.features.length; i++){
-        var element = geojsonFeature.features;
-        arrayToFill.push(element[i].properties[property]);
-      }
-      return arrayToFill
-    }
-    // oggetto contenente label ed array delle proprietà
-    var propertiesObj = {
-      country: {
-        propertyName: "country",
-        arrayName: country,
-        propertyClass: '.filter-country'
-      },
-      resseller_type: {
-        propertyName: "resseller_type",
-        arrayName: resseller_type,
-        propertyClass: '.filter-resseller'
-      },
-      state_province: {
-        propertyName: "state_province",
-        arrayName: state_province,
-        propertyClass: '.filter-state'
-      },
-      zip: {
-        propertyName: "zip",
-        arrayName: zip,
-        propertyClass: '.filter-zip'
-      } 
-    } ;
-
-
-    // With JavaScript 1.6 / ECMAScript 5 you can use the native filter method of an Array 
-    // http://stackoverflow.com/questions/1960473/unique-values-in-an-array
-    // funzione che prende i valori univoci da un array 
-    function onlyUnique(value, index, self) { 
-      return self.indexOf(value) === index;
-    }
-
-    // filters to unique elements from arrays of properties
-    // and appends to the DOM a list with ul li of same names
-    function listElementConstructor(propertyClass,arrayName){     
-      var unique = arrayName.filter(onlyUnique);
-
-      for (var i=0; i<unique.length; i++){
-      var appender = propertyClass.toString()+' ul';
-      // strano modo di passargli il valore..usa un oggetto con la proprietà html del nodo
-      $('<li />', {html:unique[i]})
-      .appendTo(appender)
-      .addClass(unique[i])
-      .attr({
-        'data-key':i ,
-        'data-value': unique[i]
-      })
-    }
-    }
-
-    // riempo gli array vuoti per ogni proprietà
-    // filtro questi array per prendere proprietà uniche
-    // uso queste uniche propr per costruire elementi di lista del menu 
-    for( prop in propertiesObj){    
-      fillArray(propertiesObj[prop].propertyName, propertiesObj[prop].arrayName);
-      listElementConstructor(propertiesObj[prop].propertyClass, propertiesObj[prop].arrayName);
-    }
-
-
-  </script>
 
 
 </body>
