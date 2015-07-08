@@ -19,9 +19,9 @@ function setActive(el) {
   // array vuoti da riempire con tutti i valori di ogni propprieta
   var country = [], zip=[], state_province=[], resseller_type = [] ;
     // funzione che mi riempie l'array con la proppietà richiesta attraversando il geojson
-    function fillArray(property, arrayToFill){      
-      for (var i=0; i<geojsonFeature.features.length; i++){
-        var element = geojsonFeature.features;
+    function fillArray(geojsonToAnalyze, property, arrayToFill){      
+      for (var i=0; i<geojsonToAnalyze.features.length; i++){
+        var element = geojsonToAnalyze.features;
         arrayToFill.push(element[i].properties[property]);
       }
       return arrayToFill
@@ -43,7 +43,7 @@ function setActive(el) {
           "Retail":"#fdae61",
           "Factory Outlet":"#ffffbf",
           "Factory Store":"#abd9e9",
-          "E-commerce  and Store":"#2c7bb6"
+          "E-commerce and Store":"#2c7bb6"
         }
       },
       state_province: {
@@ -88,12 +88,19 @@ function setActive(el) {
     // riempo gli array vuoti per ogni proprietà
     // filtro questi array per prendere proprietà uniche
     // uso queste uniche propr per costruire elementi di lista del menu 
-    for( prop in propertiesObj){    
-      fillArray(propertiesObj[prop].propertyName, propertiesObj[prop].arrayName);
-      listElementConstructor(propertiesObj[prop].propertyClass, propertiesObj[prop].arrayName, propertiesObj[prop].propertyName);
+    // for( prop in propertiesObj){    
+    //   fillArray(propertiesObj[prop].propertyName, propertiesObj[prop].arrayName);
+    //   listElementConstructor(propertiesObj[prop].propertyClass, propertiesObj[prop].arrayName, propertiesObj[prop].propertyName);
+    // }
+
+    function menuConstructor(){
+       for( prop in propertiesObj){    
+        fillArray(geojsonFeature, propertiesObj[prop].propertyName, propertiesObj[prop].arrayName);
+        listElementConstructor(propertiesObj[prop].propertyClass, propertiesObj[prop].arrayName, propertiesObj[prop].propertyName);
+      }
     }
-
-
+    
+    menuConstructor();
 
     /*==========  preparo mappa  ==========*/
 
@@ -199,53 +206,47 @@ map.fitBounds(locations.getBounds());
 map.addLayer(layer);
 
 
-/* filtri */ 
-
-//  console.log(document.getElementsByClassName('.filter-country'));
-
-// create marker colours obj
-var coloursObj = unique_resellers.reduce(function(o, v, i) {
-  o[i] = v;  
-  console.log(o);
-  console.log(i);
-  console.log(v);
-  return o;
-}, {});
+/*==========  filtri  ==========*/
 
 $('.filter-master ul li').click(function(event) {
 
+  /* reconstruct the menu */
+  menuConstructor();
+  
+  /* reconstruct the map */  
   map.removeLayer(locations);
   
   filterPressed = event.target.dataset.filter;
   var prop = event.target.dataset.value;
 
 
-  locations = L.geoJson(locations.toGeoJSON(), {
+  locations = L.geoJson(geojsonFeature, {
     pointToLayer: function(feature, latlng) {
-
-      if (filterPressed=='resseller_type'){
-        console.log(feature);
-        console.log(feature.properties.resseller_type + ' '+ propertiesObj.resseller_type.resseller_typologies[feature.properties.resseller_type] );
+      // apply different colors for each reseller type
+      if (filterPressed=='resseller_type'){        
         var markerColor = propertiesObj.resseller_type.resseller_typologies[feature.properties.resseller_type]
-        console.log(markerColor);
         var markerIcon = L.MakiMarkers.icon({icon: "circle", color: markerColor, size: "m"});
       }else{
         var markerIcon = L.MakiMarkers.icon({icon: "fast-food", color: "#2D3CCC", size: "m"});
       }      
       return L.marker(latlng, {icon: markerIcon});
     },
+    // filter the geojson taking only the marker for the required filter
     filter: function(feature) {
       return feature.properties[filterPressed] == prop;
     }
   });
-
-  map.addLayer(locations);
-
+  // add new marker layer
+  map.addLayer(locations);  
+  // recenter the map
+  map.fitBounds(locations.getBounds());
 });
 
 $('.filter-reset').click(function () {
   map.removeLayer(locations);    
   wholeMarkersLayer();
+  // recenter the map
+  map.fitBounds(locations.getBounds());
   
 })
 
