@@ -221,3 +221,8 @@ a:hover { color:#101010; }
 .filter-reset{
   background-color: rgb(234, 144, 144);
 }
+
+/*pop-up*/
+.leaflet-popup-content{
+  margin-bottom: 0;
+}

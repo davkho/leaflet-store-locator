@@ -81,7 +81,7 @@ function setActive(el) {
       // strano modo di passargli il valore..usa un oggetto con la proprietà html del nodo
       $('<li />', {html:unique[i]})
       .appendTo(appender)
-      .addClass(unique[i])
+      .addClass(unique[i] + ' filter-master-to-remove')
       .attr({
         'data-filter':propertyName ,
         'data-value': unique[i]
@@ -227,7 +227,8 @@ map.addLayer(layer);
 
 /*==========  filtri  ==========*/
 
-$('.filter-master ul li').click(function(event) {
+function attachEvents(){
+  $('.filter-master ul li').click(function(event) {
 
   /* reconstruct the map */  
   map.removeLayer(locations);
@@ -270,25 +271,28 @@ $('.filter-master ul li').click(function(event) {
   console.log(bb);
   menuConstructor(geojsonFeature);
 });
+};
+
+attachEvents();
+
 
 $('.filter-reset').click(function () {
   map.removeLayer(locations);
-  // $('.filter-master').remove()
+  $('.filter-master-to-remove').remove();
   menuConstructor(geojsonFeature);    
   wholeMarkersLayer();
+  locations.eachLayer(function(e){  
+  createPopUp(e)
+});
   // recenter the map
   map.fitBounds(locations.getBounds());
+  attachEvents();
+  
+
+
   
 })
 
-// L.geoJson(someFeatures, {
-//     filter: function(feature, layer) {
-//         return feature.properties.show_on_map;
-//     }
-// }).addTo(map);
 
-
-// data filter tipo 
-// data filet value
 
 
