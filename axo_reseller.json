@@ -1,4 +1,5 @@
 var geojsonFeature = {
+    "type": "FeatureCollection",
     "features": [
         {
             "geometry": {
@@ -2622,6 +2623,6 @@ var geojsonFeature = {
             },
             "type": "Feature"
         }
-    ],
-    "type": "FeatureCollection"
+    ]
+    
 };

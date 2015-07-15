@@ -18,8 +18,10 @@ function setActive(el) {
 
   // array vuoti da riempire con tutti i valori di ogni propprieta
   var country = [], zip=[], state_province=[], resseller_type = [] ;
-    // funzione che mi riempie l'array con la proppietà richiesta attraversando il geojson
-    function fillArray(geojsonToAnalyze, property, arrayToFill){      
+
+  // funzione che mi riempie l'array con la proprietà richiesta attraversando il geojson
+  function fillArray(geojsonToAnalyze, property, arrayToFill){      
+
       for (var i=0; i<geojsonToAnalyze.features.length; i++){
         var element = geojsonToAnalyze.features;
         arrayToFill.push(element[i].properties[property]);
@@ -70,10 +72,12 @@ function setActive(el) {
     // and appends to the DOM a list with ul li of same names
     function listElementConstructor(propertyClass,arrayName, propertyName){     
       var unique = arrayName.filter(onlyUnique);
+      console.log(unique);
       // save the unique resellers array so I can use it to color the markers later on
       if (propertyName == 'resseller_type') {unique_resellers = unique;}
       for (var i=0; i<unique.length; i++){
         var appender = propertyClass.toString()+' ul';
+        console.log(appender);
       // strano modo di passargli il valore..usa un oggetto con la proprietà html del nodo
       $('<li />', {html:unique[i]})
       .appendTo(appender)
@@ -81,9 +85,9 @@ function setActive(el) {
       .attr({
         'data-filter':propertyName ,
         'data-value': unique[i]
-      })
+        })
+      }
     }
-  }
 
     // riempo gli array vuoti per ogni proprietà
     // filtro questi array per prendere proprietà uniche
@@ -93,33 +97,35 @@ function setActive(el) {
     //   listElementConstructor(propertiesObj[prop].propertyClass, propertiesObj[prop].arrayName, propertiesObj[prop].propertyName);
     // }
 
-    function menuConstructor(){
-       for( prop in propertiesObj){    
-        fillArray(geojsonFeature, propertiesObj[prop].propertyName, propertiesObj[prop].arrayName);
+    function menuConstructor(jsonToPass){
+      for( prop in propertiesObj){    
+        fillArray(jsonToPass, propertiesObj[prop].propertyName, propertiesObj[prop].arrayName);
         listElementConstructor(propertiesObj[prop].propertyClass, propertiesObj[prop].arrayName, propertiesObj[prop].propertyName);
       }
     }
     
-    menuConstructor();
+    /*build the menu*/ 
+    menuConstructor(geojsonFeature);
+    
 
-    /*==========  preparo mappa  ==========*/
-
-
-    var layer = L.tileLayer('http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', {
-      attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="http://cartodb.com/attributions">CartoDB</a>'
-    });
-
-    var map = L.map('map', {
-      scrollWheelZoom: false,
-      center: [38.909671288923, -77.034084142948],
-      zoom: 16
-    });
+  /*==========  preparo mappa  ==========*/
 
 
-    /*==========  carico dati creando un geoJSON layer and GO!!!  ==========*/
+  var layer = L.tileLayer('http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', {
+    attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="http://cartodb.com/attributions">CartoDB</a>'
+  });
 
-    var locations;
-    function wholeMarkersLayer(){
+  var map = L.map('map', {
+    scrollWheelZoom: false,
+    center: [38.909671288923, -77.034084142948],
+    zoom: 16
+  });
+
+
+  /*==========  carico dati creando un geoJSON layer and GO!!!  ==========*/
+
+  var locations;
+  function wholeMarkersLayer(){
     // carico geojson su geojson layer
     // var geojsonFeature = './sweetgreen.geojson';
     locations = L.geoJson(geojsonFeature, {
@@ -148,7 +154,13 @@ function setActive(el) {
 // visto che non ho le funzioni adeguate
 // ora prima creo delle features
 // e poi ciclando sul layer che le contiene gli aggiungo le funzionalità che voglio 
-locations.eachLayer(function  (e) {
+
+// funzione per creare popup
+function createPopUp (e) {
+      
+      
+      // var e  = (!feature) ? layer : feature;
+      // console.log(e == layer);
     // Shorten locale.feature.properties to just `prop` so we're not
       // writing this long form over and over again.
       var prop = e.feature.properties;
@@ -196,9 +208,16 @@ locations.eachLayer(function  (e) {
 
       popup += '</div>';
       e.bindPopup(popup);
+    };
 
 
-    });
+locations.eachLayer(createPopUp);
+// stesso approccio che la riga sopra
+// locations.eachLayer(function(e){  
+//   createPopUp(e)
+// });
+
+
 
 // sistemo il BBOX fittandolo all'estensione delle features
 map.fitBounds(locations.getBounds());
@@ -210,9 +229,6 @@ map.addLayer(layer);
 
 $('.filter-master ul li').click(function(event) {
 
-  /* reconstruct the menu */
-  menuConstructor();
-  
   /* reconstruct the map */  
   map.removeLayer(locations);
   
@@ -236,14 +252,29 @@ $('.filter-master ul li').click(function(event) {
       return feature.properties[filterPressed] == prop;
     }
   });
+
+  // recreate da popupz
+  locations.eachLayer(function(e){  
+  createPopUp(e)
+});
   // add new marker layer
   map.addLayer(locations);  
   // recenter the map
   map.fitBounds(locations.getBounds());
+
+  /*delete the menu*/
+  var element = $('.filter-master-to-remove');
+    element.removeChild(element.firstChild);
+  /* reconstruct the menu */
+  bb = locations.toGeoJSON();
+  console.log(bb);
+  menuConstructor(geojsonFeature);
 });
 
 $('.filter-reset').click(function () {
-  map.removeLayer(locations);    
+  map.removeLayer(locations);
+  // $('.filter-master').remove()
+  menuConstructor(geojsonFeature);    
   wholeMarkersLayer();
   // recenter the map
   map.fitBounds(locations.getBounds());
