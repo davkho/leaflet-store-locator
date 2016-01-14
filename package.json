@@ -18,5 +18,19 @@
   "homepage": "https://github.com/miccferr/leaflet-store-locator",
   "dependencies": {
     "jquery": "^2.1.4"
+  },
+  "devDependencies": {
+    "eslint": "^1.10.3",
+    "eslint-config-google": "^0.3.0"
+  },
+  "eslintConfig": {
+  "globals": {
+    "window": true,
+    "document": true,
+    "$": true,
+    "L": true,
+    "geojsonFeature": true
   }
+}
+
 }
